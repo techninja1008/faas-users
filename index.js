@@ -28,6 +28,27 @@ function createIfNotExists(client, bucket){
 
 app.use('/v1/*', bodyParser.json())
 
+app.get('/v1/user_exists', function (req, res) {
+  user.userExists(req.query.email).then(result => {
+    res.json({
+      meta: {
+        error: null
+      },
+      data: result ? [{username: req.query.email}] : []
+    })
+  }).catch(err => {
+    res.status(400).json({
+      meta: {
+        error: {
+          message: err.toString()
+        }
+      },
+      data: []
+    })
+    console.log("User exists: " + err)
+  })
+})
+
 app.post('/v1/users', function (req, res) {
   let {email, username, password, repeat_password} = req.body
   

@@ -7,6 +7,19 @@ let minioClient = new Minio.Client(config.minio)
 let bucket = config.auth_bucket.name
 
 module.exports = {
+  userExists: (username) => {
+    return new Promise((resolve, reject) => {
+      minioClient.statObject(bucket, "users/" + username, function(err, stat) {
+        if (err) {
+          if(err.code == 'NotFound'){
+            return resolve(false)
+          }
+          return reject(err.code)
+        }
+        return resolve(true)
+      })
+    })
+  },
   registerUser: (username, password) => {
     return new Promise((resolve, reject) => {
       minioClient.statObject(bucket, "users/" + username, function(err, stat) {
